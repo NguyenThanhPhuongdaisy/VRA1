@@ -1,10 +1,11 @@
 function BT029()
     strFolderDataTrain=fullfile('DataTrain');
-    categories={'0','1','2','3','4','5','6','7','8','9'}; % train 10 model, upline t?ng model --> t d‡i.
+    categories={'0','1','2','3','4','5','6','7','8','9'}; % train 10 model, upline t?ng model --> t d√†i.
     imdsDataTrain=imageDatastore(fullfile(strFolderDataTrain,categories),'LabelSource','foldernames');
     imdsDataTrain.ReadFcn=@(filename)readAndPrepprocessImage(filename);
-    net=alexnet()
-    featuresDataTrain=activation(net,imdsDataTrain, featureLayer,'MiniBatchSize',32,'OutputAs','columns');
+    net = alexnet();
+    featureLayer='fc7'; % fc6: 6,7 layer
+    featuresDataTrain=activations(net,imdsDataTrain, featureLayer,'MiniBatchSize',32,'OutputAs','columns');
     lblDataTrain=imdsDataTrain.Labels;
     classifier=fitcecoc(featuresDataTrain,lblDataTrain,'Learners','Linear','Coding','onevsall','ObservationsIn','columns');
     
@@ -13,7 +14,7 @@ function BT029()
     categories={'0','1','2','3','4','5','6','7','8','9'};
     imdsDataTest=imageDatastore(fullfile(strFolderDataTest,categories),'LabelSource','foldernames');
     imdsDataTest.ReadFcn=@(filename)readAndPrepprocessImage(filename);
-    featuresDataTest=activation(net,imdsDataTest, featureLayer,'MiniBatchSize',32);
+    featuresDataTest=activations(net,imdsDataTest, featureLayer,'MiniBatchSize',32);
     lblActualDataTest=imdsDataTest.Labels;
     lblResult=predict(classifier,featuresDataTest);
     nResult=(lblActualDataTest==lblResult);
